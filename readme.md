@@ -146,3 +146,61 @@ public class UserController {
     @Value("${app.name}")
     private String appName;
 ```
+
+
+### 3. application.properties (application.yml)
+- it is like a Spring Boot is like your .env file in Node.js/Express.
+- It is used to configure your application without hardcoding values in code.
+- Spring Boot automatically loads it at startup.
+- Common Use Cases
+- - Database connection settings
+- - Server port
+- - Logging levels
+- - Custom app values (like API keys, names)
+```json
+    spring.datasource.url=jdbc:mysql://localhost:3306/mydb
+    spring.datasource.username=root
+    spring.datasource.password=secret
+    spring.jpa.hibernate.ddl-auto=update
+    spring.jpa.show-sql=true
+
+    // changing the server port using this
+    server.port=8081
+
+    // You can define your own values:
+    app.name=sharad
+    app.version=1.0.4
+```
+
+```java
+    @RestController
+    public class AppController {
+        @Value("${app.name}")
+        private String appName;
+
+        @Value("${app.version}")
+        private String version;
+
+        @GetMapping("/info")
+        public String getAppInfo() {
+            return appName + " - v" + version;
+        }
+    }
+```
+
+- Profiles (dev, test, prod)
+- You can create environment-specific files:
+- application-dev.properties
+- application-test.properties
+- application-prod.properties
+```bash
+    java -jar app.jar --spring.profiles.active=dev
+```
+- Similar to having .env.development and .env.production in Node.js.
+```json
+    # application-dev.properties
+    server.port=8081
+
+    # application-prod.properties
+    server.port=80
+```
