@@ -463,3 +463,67 @@ public EmailClient emailClient() {
     return new EmailClient("smtp.mailtrap.io");
 }
 ```
+
+
+### Spring Data JPA & Databases
+- What is JPA?
+- JPA (Java Persistence API) = Specification for ORM (Object Relational Mapping).
+- ORM = maps Java classes (objects) to database tables.
+- mplementation: Hibernate (most popular, used by default in Spring Boot).
+- Example:
+- A User class in Java = users table in DB.
+- User object → row in DB.
+
+- Connecting to MySQL/Postgres
+- application.properties:
+```bash
+spring.datasource.url=jdbc:mysql://localhost:3306/mydb
+spring.datasource.username=root
+spring.datasource.password=secret
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
+
+- spring.jpa.hibernate.ddl-auto
+1. create → creates tables from entities (drops existing ones).
+2. update → updates schema automatically (most used in dev).
+3. validate → only validates schema.
+4. none → no action.
+
+- Entity Class (@Entity)
+- Represents a table in DB.
+- Each object = row in table.
+- Equivalent to a Mongoose Schema in Node.js.
+```java
+import jakarta.persistence.*;
+
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto increment
+    private Long id;
+
+    private String name;
+    private String email;
+
+    // getters & setters
+    // for getting and setting the values in the database....
+}
+```
+
+- Repository (DAO layer)
+- Instead of writing SQL manually, Spring provides JpaRepository interface.
+- JpaRepository<User, Long> → manages User entity with Long as ID type.
+- Provides built-in CRUD methods:
+1. findAll()
+2. findById(id)
+3. save(user)
+4. deleteById(id)
+- Similar to Mongoose’s User.find(), User.create().
+```java
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {}
+```
