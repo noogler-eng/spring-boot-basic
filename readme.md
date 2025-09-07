@@ -318,3 +318,73 @@ public class AppController {
     }
 }
 ```
+
+
+### what is Beans ?
+- There are 6 types of bean scopes, but the two most important (and most used) are:
+- Singleton (default)
+    1. Only one object (bean) is created for the entire Spring application context.
+    2. Every time you @Autowired that bean, Spring gives you the same instance.
+    3. Good for stateless services (e.g., Service classes, Repositories).
+    4. because singleton is default
+    ```java
+        // this is by default beam.....
+        @Service
+        public class UserService {
+            public String getUser() {
+                return "Sharad";
+            }
+        }
+
+        @RestController
+        public class TestController {
+            @Autowired
+            private UserService userService1;
+
+            @Autowired
+            private UserService userService2;
+
+            @GetMapping("/check")
+            public String checkBeans() {
+                return (userService1 == userService2) ? "Same Object" : "Different Objects";
+            }
+        }
+    ```
+- Prototype
+    1. Every time you request the bean, Spring creates a new object.
+    2. Useful for stateful beans (like objects with temporary data, calculators, etc.).
+    ```java
+        // this will create the prototype beam.....
+        @Component
+        @Scope("prototype")
+        public class RandomNumberBean {
+            private int number;
+
+            public RandomNumberBean() {
+                this.number = (int)(Math.random() * 1000);
+            }
+
+            public int getNumber() {
+                return number;
+            }
+        }
+
+        @RestController
+        public class TestController {
+            @Autowired
+            private RandomNumberBean bean1;
+
+            @Autowired
+            private RandomNumberBean bean2;
+
+            @GetMapping("/check")
+            public String checkBeans() {
+                return bean1.getNumber() + " - " + bean2.getNumber();
+            }
+        }
+    ```
+- Other Scopes (used in Web apps)
+- - request → one bean per HTTP request.
+- - session → one bean per HTTP session (per user).
+- - application → one bean per servlet context.
+- - websocket → one bean per WebSocket session.
