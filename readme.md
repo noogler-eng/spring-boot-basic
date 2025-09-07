@@ -275,3 +275,46 @@ public class OrderService {
     }
 }
 ```
+
+### project flow 
+```java
+// Creates UserService bean.
+// Injects it into OrderService.
+// Injects OrderService into AppController.
+// You never used new keyword — Spring handled it.
+@Service
+public class UserService {
+    public String getUserName() {
+        return "Sharad";
+    }
+}
+
+@Service
+public class OrderService {
+    private final UserService userService;
+
+    @Autowired
+    public OrderService(UserService userService) {
+        this.userService = userService;
+    }
+
+    public String createOrder() {
+        return "Order created for user: " + userService.getUserName();
+    }
+}
+
+@RestController
+public class AppController {
+    private final OrderService orderService;
+
+    @Autowired
+    public AppController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @GetMapping("/order")
+    public String placeOrder() {
+        return orderService.createOrder();
+    }
+}
+```
