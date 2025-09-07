@@ -204,3 +204,74 @@ public class UserController {
     # application-prod.properties
     server.port=80
 ```
+
+
+### 4. Dependency Injection (DI) & Inversion of Control (IoC).
+- The Problem (Without DI)
+- Imagine in Node.js you do this:
+```js
+    // we create an object from class
+    const userService = new UserService();
+    // making an another class with same object
+    // OrderService depends on UserService.
+    // You are the one creating objects (new UserService()).
+    // If tomorrow UserService changes, you need to update everywhere.
+    // This is called Tight Coupling.
+    const orderService = new OrderService(userService);
+```
+
+- Inversion of Control (IoC)
+- Inversion of Control = Don’t create objects yourself, let the framework do it.
+- You controlling object creation,
+- The Spring IoC Container (like a manager) creates and manages them for you.
+- Dependency Injection = Give the required objects (dependencies) to a class automatically.
+```java
+    UserService userService = new UserService();
+    OrderService orderService = new OrderService(userService);
+
+    // instead od this we can write this
+    @Service
+    public class OrderService {
+        @Autowired
+        private UserService userService;
+    }
+    // Spring will:
+    // Create a UserService object (a bean).
+    // Inject it into OrderService automatically.
+```
+
+#### Types of Dependency Injection in Spring
+- Field Injection (most common, but less recommended for testing)
+```java
+@Service
+public class OrderService {
+    @Autowired
+    private UserService userService;
+}
+```
+
+- Constructor Injection (recommended way)
+```java
+@Service
+public class OrderService {
+    private final UserService userService;
+
+    @Autowired
+    public OrderService(UserService userService) {
+        this.userService = userService;
+    }
+}
+```
+
+- Setter Injection
+```java
+@Service
+public class OrderService {
+    private UserService userService;
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+}
+```
