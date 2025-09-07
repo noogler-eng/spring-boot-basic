@@ -157,7 +157,7 @@ public class UserController {
 - - Server port
 - - Logging levels
 - - Custom app values (like API keys, names)
-```json
+```bash
     spring.datasource.url=jdbc:mysql://localhost:3306/mydb
     spring.datasource.username=root
     spring.datasource.password=secret
@@ -197,7 +197,7 @@ public class UserController {
     java -jar app.jar --spring.profiles.active=dev
 ```
 - Similar to having .env.development and .env.production in Node.js.
-```json
+```bash
     # application-dev.properties
     server.port=8081
 
