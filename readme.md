@@ -388,3 +388,78 @@ public class AppController {
 - - session → one bean per HTTP session (per user).
 - - application → one bean per servlet context.
 - - websocket → one bean per WebSocket session.
+
+
+### Practical Example (Using @Configuration + @Bean)
+- Imagine you have a service that depends on a third-party class (not under your control, so you can’t annotate it with @Service).
+- Use when you need beans for classes you can’t annotate with @Component/@Service.
+- @Configuration = bean factory class.
+- @Bean = method that defines a bean.
+```java
+    // third-party class (we can’t modify it)
+    public class EmailClient {
+        private String host;
+
+        public EmailClient(String host) {
+            this.host = host;
+        }
+
+        public String sendEmail(String to) {
+            return "Email sent to " + to + " via " + host;
+        }
+    }
+
+    // Configure it as a Spring bean manually:
+    @Configuration
+        public class AppConfig {
+
+        // now the object of this has been created....
+        @Bean
+        public EmailClient emailClient() {
+            return new EmailClient("smtp.gmail.com");
+        }
+    }
+
+    @Service
+    public class NotificationService {
+        private final EmailClient emailClient;
+
+        @Autowired
+        public NotificationService(EmailClient emailClient) {
+            this.emailClient = emailClient;
+        }
+
+        public String notifyUser(String user) {
+            return emailClient.sendEmail(user);
+        }
+    }
+
+    @RestController
+    public class AppController {
+
+        @Autowired
+        private NotificationService notificationService;
+
+        @GetMapping("/notify/{user}")
+        public String notify(@PathVariable String user) {
+            return notificationService.notifyUser(user);
+        }
+    }
+```
+
+
+### @Bean vs @Component
+- @Component → put directly on class (Spring scans automatically).
+- @Bean → used when:
+1. You want to configure third-party classes.
+2. You need to customize how a bean is created.
+- Bean Names
+- By default, bean name = method name.
+- You can override:
+- Then inject it with @Qualifier("customEmailClient").
+```java
+@Bean(name = "customEmailClient")
+public EmailClient emailClient() {
+    return new EmailClient("smtp.mailtrap.io");
+}
+```
